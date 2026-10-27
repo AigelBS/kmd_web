@@ -40,8 +40,8 @@ class ProductosController extends AppController
 				$conditions,
 				array(
 					'OR' => array(
-						'Producto.nombre_web LIKE "%' . $search_string . '%"',
-						'Producto.marca_web LIKE "%' . $search_string . '%"',
+						'Producto.nombre_producto LIKE "%' . $search_string . '%"',
+						'Producto.marca LIKE "%' . $search_string . '%"',
 						'Producto.categoria_kosher LIKE "%' . $search_string . '%"',
 
 					)
@@ -52,10 +52,10 @@ class ProductosController extends AppController
 			array_push($conditions, array('Producto.categoria_kosher' => $categorias_opciones[$this->request->data['Producto']['categoria_id']]));
 		}
 		if (!empty($this->request->data['Producto']['producto'])) {
-			array_push($conditions, array('Producto.nombre_web LIKE "%' . $this->request->data['Producto']['producto'] . '%"'));
+			array_push($conditions, array('Producto.nombre_producto LIKE "%' . $this->request->data['Producto']['producto'] . '%"'));
 		}
 		if (!empty($this->request->data['Producto']['marca'])) {
-			array_push($conditions, array('Producto.marca_web' => $this->request->data['Producto']['marca']));
+			array_push($conditions, array('Producto.marca' => $this->request->data['Producto']['marca']));
 		}
 		if (!empty($this->request->data['Producto']['estatus'])) {
 			array_push($conditions, array('Producto.clasificacion' => $this->request->data['Producto']['estatus']));
@@ -65,13 +65,13 @@ class ProductosController extends AppController
 			'conditions' => $conditions,
 			'contain' => false,
 			'fields' => array(
-				'nombre_web',
+				'nombre_producto',
 				'categoria_kosher',
-				'marca_web',
+				'marca',
 				'clasificacion'
 			),
 			'order' => array(
-				'Producto.nombre_web' => 'ASC'
+				'Producto.nombre_producto' => 'ASC'
 			)
 		);
 		$productos_pag = $this->paginate($this->Producto);
@@ -84,19 +84,19 @@ class ProductosController extends AppController
 		$resultados = $this->Producto->find('count', array('conditions' => $conditions));
 
 		$productos = $this->Producto->find('all', array(
-			'conditions' => array('Producto.marca_web' != ""),
+			'conditions' => array('Producto.marca' != ""),
 			'contain' => false,
 			'fields' => array(
-				'marca_web',
+				'marca',
 			),
 			'order' => array(
-				'Producto.marca_web' => 'ASC'
+				'Producto.marca' => 'ASC'
 			)
 		));
 		//Marcas
 		$marcas = array();
 		foreach ($productos as $producto) {
-			$marcas[$producto['Producto']['marca_web']] = strtoupper($producto['Producto']['marca_web']);
+			$marcas[$producto['Producto']['marca']] = strtoupper($producto['Producto']['marca']);
 		}
 		$this->set('marcas', $marcas);
 
@@ -148,8 +148,8 @@ class ProductosController extends AppController
 					$conditions,
 					array(
 						'OR' => array(
-							'Producto.nombre_web LIKE "%' . $searchTerm . '%"',
-							'Producto.marca_web LIKE "%' . $searchTerm . '%"',
+							'Producto.nombre_producto LIKE "%' . $searchTerm . '%"',
+							'Producto.marca LIKE "%' . $searchTerm . '%"',
 							'Producto.categoria_kosher LIKE "%' . $searchTerm . '%"',
 
 						)
@@ -161,7 +161,7 @@ class ProductosController extends AppController
 					array_push(
 						$conditions,
 						array(
-							'Producto.nombre_web LIKE "%' . $nombre_term . '%"',
+							'Producto.nombre_producto LIKE "%' . $nombre_term . '%"',
 						)
 					);
 				}
@@ -170,7 +170,7 @@ class ProductosController extends AppController
 					array_push(
 						$conditions,
 						array(
-							'Producto.marca_web' => $marca_term,
+							'Producto.marca' => $marca_term,
 						)
 					);
 				}
@@ -193,23 +193,21 @@ class ProductosController extends AppController
 				'recursive' => 2,
 				'page' => 1,
 				'fields' => array(
-					'nombre_web',
-					'categoria_kosher',
-					'marca_web',
-					'clasificacion',
-					'id',
 					'nombre_producto',
-					'marca'
+					'categoria_kosher',
+					'marca',
+					'clasificacion',
+					'id'
 				),
 				'order' => array(
-					'Producto.nombre_web' => 'ASC'
+					'Producto.nombre_producto' => 'ASC'
 				),
 			);
 			$productos_pag = $this->paginate('Producto');
 
 			for ($i = 0; $i < sizeof($productos_pag); $i++) {
-				if (isset($restricciones_marcas[$productos_pag[$i]['Producto']['marca_web']])) {
-					$productos_pag[$i]['Producto']['restriccion'] = $restricciones_marcas[$productos_pag[$i]['Producto']['marca_web']];
+				if (isset($restricciones_marcas[$productos_pag[$i]['Producto']['marca']])) {
+					$productos_pag[$i]['Producto']['restriccion'] = $restricciones_marcas[$productos_pag[$i]['Producto']['marca']];
 				}
 			}
 
@@ -224,18 +222,18 @@ class ProductosController extends AppController
 				'conditions' => $conditions,
 				//'contain'=>false,
 				'fields' => array(
-					'marca_web',
+					'marca',
 					'clasificacion'
 				),
 				'order' => array(
-					'Producto.marca_web' => 'ASC'
+					'Producto.marca' => 'ASC'
 				)
 			));
 			//Marcas
 			$marcas = array();
 			$estatus = array();
 			foreach ($productos as $producto) {
-				$marcas[$producto['Producto']['marca_web']] = strtoupper($producto['Producto']['marca_web']);
+				$marcas[$producto['Producto']['marca']] = strtoupper($producto['Producto']['marca']);
 				$estatus[$producto['Producto']['clasificacion']] = strtoupper($certificados[$producto['Producto']['clasificacion']]);
 			}
 			$this->set('marcas', $marcas);

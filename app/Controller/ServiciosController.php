@@ -310,6 +310,11 @@ class ServiciosController extends AppController
 				'precio' => 1000.00,
 				'visibilidad' => 'establecimientos'
 			),
+			18 => array(
+				'name' => 'EVENTO DE 1 SOLO PRODUCTO',
+				'precio' => 1160.00,
+				'visibilidad' => 'establecimientos'
+			),
 		);
 
 
