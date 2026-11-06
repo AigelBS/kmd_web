@@ -149,7 +149,9 @@ class ProductosController extends AppController
 					array(
 						'OR' => array(
 							'Producto.nombre_producto LIKE "%' . $searchTerm . '%"',
+							'Producto.nombre_web LIKE "%' . $searchTerm . '%"',
 							'Producto.marca LIKE "%' . $searchTerm . '%"',
+							'Producto.marca_web LIKE "%' . $searchTerm . '%"',
 							'Producto.categoria_kosher LIKE "%' . $searchTerm . '%"',
 
 						)
@@ -161,7 +163,10 @@ class ProductosController extends AppController
 					array_push(
 						$conditions,
 						array(
-							'Producto.nombre_producto LIKE "%' . $nombre_term . '%"',
+							'OR' => array(
+								'Producto.nombre_producto LIKE "%' . $nombre_term . '%"',
+								'Producto.nombre_web LIKE "%' . $nombre_term . '%"',
+							)
 						)
 					);
 				}
@@ -170,7 +175,10 @@ class ProductosController extends AppController
 					array_push(
 						$conditions,
 						array(
-							'Producto.marca' => $marca_term,
+							'OR' => array(
+								'Producto.marca' => $marca_term,
+								'Producto.marca_web' => $marca_term,
+							)
 						)
 					);
 				}
@@ -194,8 +202,10 @@ class ProductosController extends AppController
 				'page' => 1,
 				'fields' => array(
 					'nombre_producto',
+					'nombre_web',
 					'categoria_kosher',
 					'marca',
+					'marca_web',
 					'clasificacion',
 					'id'
 				),
@@ -206,8 +216,9 @@ class ProductosController extends AppController
 			$productos_pag = $this->paginate('Producto');
 
 			for ($i = 0; $i < sizeof($productos_pag); $i++) {
-				if (isset($restricciones_marcas[$productos_pag[$i]['Producto']['marca']])) {
-					$productos_pag[$i]['Producto']['restriccion'] = $restricciones_marcas[$productos_pag[$i]['Producto']['marca']];
+				$marca_prod = !empty($productos_pag[$i]['Producto']['marca']) ? $productos_pag[$i]['Producto']['marca'] : $productos_pag[$i]['Producto']['marca_web'];
+				if (isset($restricciones_marcas[$marca_prod])) {
+					$productos_pag[$i]['Producto']['restriccion'] = $restricciones_marcas[$marca_prod];
 				}
 			}
 
@@ -223,6 +234,7 @@ class ProductosController extends AppController
 				//'contain'=>false,
 				'fields' => array(
 					'marca',
+					'marca_web',
 					'clasificacion'
 				),
 				'order' => array(
@@ -233,7 +245,10 @@ class ProductosController extends AppController
 			$marcas = array();
 			$estatus = array();
 			foreach ($productos as $producto) {
-				$marcas[$producto['Producto']['marca']] = strtoupper($producto['Producto']['marca']);
+				$m = !empty($producto['Producto']['marca']) ? $producto['Producto']['marca'] : $producto['Producto']['marca_web'];
+				if (!empty($m)) {
+					$marcas[$m] = strtoupper($m);
+				}
 				$estatus[$producto['Producto']['clasificacion']] = strtoupper($certificados[$producto['Producto']['clasificacion']]);
 			}
 			$this->set('marcas', $marcas);
@@ -265,11 +280,27 @@ class ProductosController extends AppController
 
 			$nombre = $this->request->query('nombre');
 			if ($nombre != "") {
-				array_push($conditions, array("Establecimiento.nombre LIKE '%" . $nombre . "%'"));
+				array_push($conditions, array(
+					'OR' => array(
+						'Establecimiento.nombre_web LIKE "%' . $nombre . '%"',
+						'Establecimiento.nombre LIKE "%' . $nombre . '%"'
+					)
+				));
 			}
 			$categoria = $this->request->query('categoria');
 			if ($categoria != "") {
-				array_push($conditions, array("Establecimiento.categoria" => $categoria));
+				array_push($conditions, array(
+					'OR' => array(
+						'Establecimiento.categoria_web_2' => $categoria,
+						'AND' => array(
+							array('OR' => array(
+								'Establecimiento.categoria_web_2 IS NULL',
+								'Establecimiento.categoria_web_2' => ''
+							)),
+							'Establecimiento.categoria' => $categoria
+						)
+					)
+				));
 			}
 			$this->Establecimiento->Behaviors->load('Containable');
 			$this->paginate = array(
@@ -277,16 +308,27 @@ class ProductosController extends AppController
 				'conditions' => $conditions,
 				'contain' => false,
 				'fields' => array(
+					'id',
 					'nombre',
-					'direccion',
-					'telefonos',
-					'horario_trabajo',
-					'tipo_establecimiento',
-					'coordenadas',
-					'link_menu',
-					'categoria',
+					'nombre_web',
 					'logo',
-					'categoria_2'
+					'logo_web',
+					'direccion',
+					'direccion_web',
+					'telefonos',
+					'telefonos_web',
+					'horario_trabajo',
+					'horario_trabajo_web',
+					'tipo_establecimiento',
+					'tipo_establecimiento_web',
+					'coordenadas',
+					'coordenadas_web',
+					'link_menu',
+					'link_menu_web',
+					'categoria',
+					'categoria_web_2',
+					'categoria_2',
+					'categoria_2_web'
 				),
 				'page' => $this->request->query('page') ? $this->request->query('page') : 1,
 				'order' => array(
@@ -300,7 +342,28 @@ class ProductosController extends AppController
 				$establecimientos_pag
 			);
 
-			$categorias = $this->Establecimiento->find('list', array('fields' => array('categoria', 'categoria'), 'order' => 'Establecimiento.categoria ASC', 'conditions' => array('Establecimiento.categoria !=' => "")));
+			$categorias = array(
+				'Cafeterías' => 'Cafeterías',
+				'Carnes Frías' => 'Carnes Frías',
+				'Carnicerías' => 'Carnicerías',
+				'Comida para Llevar' => 'Comida para Llevar',
+				'Dulces y Chocolates' => 'Dulces y Chocolates',
+				'Fábricas de Queso' => 'Fábricas de Queso',
+				'Helados, Paletas y Nieves' => 'Helados, Paletas y Nieves',
+				'Hornos Lajmayin' => 'Hornos Lajmayin',
+				'Hospitales' => 'Hospitales',
+				'Otro' => 'Otro',
+				'Panaderías y Pastelerías' => 'Panaderías y Pastelerías',
+				'Pescaderías' => 'Pescaderías',
+				'Restaurantes Parve' => 'Restaurantes Parve',
+				'Restaurantes de Carne' => 'Restaurantes de Carne',
+				'Restaurantes Lácteos' => 'Restaurantes Lácteos',
+				'Salones Autorizados' => 'Salones Autorizados',
+				'Tiendas de Abarrotes' => 'Tiendas de Abarrotes',
+				'Banqueteros' => 'Banqueteros',
+				'Tortillerías' => 'Tortillerías',
+			);
+			asort($categorias);
 			$this->set('categorias', $categorias);
 
 		}

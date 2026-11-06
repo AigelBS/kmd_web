@@ -61,20 +61,33 @@ echo $this->Html->css(
 	</div>
 	<div class="u-list u-list-1">
 		<div class="u-repeater u-repeater-1">
-			<?php foreach($establecimientos as $establecimiento):?>
+			<?php foreach($establecimientos as $establecimiento):
+				$e = $establecimiento['Establecimiento'];
+				$nombre_card = !empty($e['nombre_web']) ? $e['nombre_web'] : $e['nombre'];
+				$logo_card = !empty($e['logo_web']) ? $e['logo_web'] : $e['logo'];
+				$logo_src = empty($logo_card) ? $this->Html->url('/img/favicon1.png') : "https://sistema.kosher.com.mx".$logo_card;
+				$cat_card = !empty($e['categoria_web_2']) ? $e['categoria_web_2'] : $e['categoria'];
+				$cat2_card = !empty($e['categoria_2_web']) ? $e['categoria_2_web'] : $e['categoria_2'];
+				$tipo_card = !empty($e['tipo_establecimiento_web']) ? $e['tipo_establecimiento_web'] : $e['tipo_establecimiento'];
+				$dir_card = !empty($e['direccion_web']) ? $e['direccion_web'] : $e['direccion'];
+				$horario_card = !empty($e['horario_trabajo_web']) ? $e['horario_trabajo_web'] : $e['horario_trabajo'];
+				$maps_card = !empty($e['coordenadas_web']) ? $e['coordenadas_web'] : $e['coordenadas'];
+				$tel_card = !empty($e['telefonos_web']) ? $e['telefonos_web'] : $e['telefonos'];
+				$menu_card = !empty($e['link_menu_web']) ? $e['link_menu_web'] : $e['link_menu'];
+			?>
 				<div class="u-border-1 u-border-grey-75 u-container-style u-list-item u-radius u-repeater-item u-shape-round u-list-item-1" style="height: 550px;">
 					<div class="u-container-layout u-similar-container u-container-layout-2">
 						<div class="u-border-1 u-border-grey-75 u-container-style u-group u-preserve-proportions u-white u-group-2">
 							<div class="u-container-layout u-container-layout-3">
-								<img class="u-align-center u-image u-image-contain u-image-default u-preserve-proportions u-image-1" src="<?= $establecimiento['Establecimiento']['logo']=="" ? $this->Html->url('/img/favicon1.png') : "https://sistema.kosher.com.mx".$establecimiento['Establecimiento']['logo']?>" alt="" data-image-width="128" data-image-height="128">
+								<img class="u-align-center u-image u-image-contain u-image-default u-preserve-proportions u-image-1" src="<?= $logo_src ?>" alt="" data-image-width="128" data-image-height="128">
 							</div>
 						</div>
-						<h3 class="u-align-center u-text u-text-3"> <?= $establecimiento['Establecimiento']['nombre']?></h3>
-						<a href="" class="u-align-center u-btn u-button-style u-custom-color-6 u-hover-custom-color-6 u-text-custom-color-1 u-text-hover-black u-btn-2"><?= $establecimiento['Establecimiento']['categoria']?> </a>
-						<p style="font-size: .6em; text-align: center"><i><?= $establecimiento['Establecimiento']['categoria_2']?></i></p>
-						<p class="u-align-left u-text u-text-4"> <b>Estatus:</b><br><?= $establecimiento['Establecimiento']['tipo_establecimiento']?><br><b>Dirección:</b><br>
-							<?= $establecimiento['Establecimiento']['direccion']?>
-							<br><b>Horarios:</b><br><?= $establecimiento['Establecimiento']['horario_trabajo']?>
+						<h3 class="u-align-center u-text u-text-3"> <?= h($nombre_card) ?></h3>
+						<a href="" class="u-align-center u-btn u-button-style u-custom-color-6 u-hover-custom-color-6 u-text-custom-color-1 u-text-hover-black u-btn-2"><?= h($cat_card) ?> </a>
+						<p style="font-size: .6em; text-align: center"><i><?= h($cat2_card) ?></i></p>
+						<p class="u-align-left u-text u-text-4"> <b>Estatus:</b><br><?= h($tipo_card) ?><br><b>Dirección:</b><br>
+							<?= h($dir_card) ?>
+							<br><b>Horarios:</b><br><?= h($horario_card) ?>
 						</p>
 						<div class="u-expanded-width u-table u-table-responsive u-table-1">
 							<table class="u-table-entity">
@@ -86,13 +99,13 @@ echo $this->Html->css(
 								<tbody class="u-align-center u-table-body u-table-body-1">
 								<tr style="height: 50px;">
 									<td class="u-border-1 u-border-grey-dark-1 u-table-cell" style="border-top: 1px solid black;border-left: none;border-bottom: none;">
-										<a href="<?= $establecimiento['Establecimiento']['coordenadas']?>" target="_blank"><span class="u-file-icon u-icon"><img src="<?= $this->Html->url('/img/447031.png') ?>" alt=""></span></a>
+										<a href="<?= h($maps_card) ?>" target="_blank"><span class="u-file-icon u-icon"><img src="<?= $this->Html->url('/img/447031.png') ?>" alt=""></span></a>
 									</td>
 									<td class="u-border-1 u-border-grey-dark-1 u-table-cell" style="border-bottom: none;">
-										<a href="tel:<?= $establecimiento['Establecimiento']['telefonos']?>" target="_blank"><span class="u-file-icon u-icon"><img src="<?= $this->Html->url('/img/3002249.png') ?>" alt=""></span></a>
+										<a href="tel:<?= h($tel_card) ?>" target="_blank"><span class="u-file-icon u-icon"><img src="<?= $this->Html->url('/img/3002249.png') ?>" alt=""></span></a>
 									</td>
 									<td class="u-border-1 u-border-grey-dark-1 u-table-cell" style="border-right: none;border-bottom: none;">
-										<a href="<?= $establecimiento['Establecimiento']['link_menu']?>" target="_blank"><span class="u-file-icon u-icon"><img src="<?= $this->Html->url('/img/395579.png') ?>" alt=""></span></a>
+										<a href="<?= h($menu_card) ?>" target="_blank"><span class="u-file-icon u-icon"><img src="<?= $this->Html->url('/img/395579.png') ?>" alt=""></span></a>
 									</td>
 								</tr>
 								</tbody>

@@ -67,17 +67,19 @@ echo $this->Html->css(
 					class="u-container-style u-custom-color-9 u-list-item u-radius u-repeater-item u-shape-round u-list-item-1">
 					<div class="u-container-layout u-similar-container u-container-layout-2">
 						<h3 class="u-text u-text-3">
-							<?= $producto['Producto']['nombre_producto'] ?>
+							<?= !empty($producto['Producto']['nombre_producto']) ? $producto['Producto']['nombre_producto'] : $producto['Producto']['nombre_web'] ?>
 						</h3>
 						<p class="u-text u-text-4">Marca:
-							<?= $producto['Producto']['marca'] ?><br>Estatus:
+							<?= !empty($producto['Producto']['marca']) ? $producto['Producto']['marca'] : $producto['Producto']['marca_web'] ?><br>Estatus:
 							<?= $certificados_all[$producto['Producto']['clasificacion']] ?>
 							<br>
 							<?php
+							$nombre_prod_mostrar = !empty($producto['Producto']['nombre_producto']) ? $producto['Producto']['nombre_producto'] : $producto['Producto']['nombre_web'];
+							$marca_prod_mostrar = !empty($producto['Producto']['marca']) ? $producto['Producto']['marca'] : $producto['Producto']['marca_web'];
 							if (isset($producto['Certificado'][0]['CertificadoProducto']['restriccion']) && $producto['Certificado'][0]['CertificadoProducto']['restriccion'] != "") {
-								echo $this->Html->link('Ver Restricciones', "javascript:showRestriccionIndividual('" . $producto['Certificado'][0]['CertificadoProducto']['restriccion'] . "','" . $producto['Producto']['nombre_producto'] . "')");
+								echo $this->Html->link('Ver Restricciones', "javascript:showRestriccionIndividual('" . $producto['Certificado'][0]['CertificadoProducto']['restriccion'] . "','" . $nombre_prod_mostrar . "')");
 							} else if (isset($producto['Producto']['restriccion'])) {
-								echo $this->Html->link('Ver Restricciones', "javascript:showRestriccion('" . $producto['Producto']['marca'] . "')");
+								echo $this->Html->link('Ver Restricciones', "javascript:showRestriccion('" . $marca_prod_mostrar . "')");
 							}
 							?>
 						</p>
